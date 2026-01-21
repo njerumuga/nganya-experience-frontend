@@ -1,17 +1,37 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const API_BASE = "https://nganya-experience-backend-2.onrender.com";
 
 export default function Home() {
     const [show, setShow] = useState(false);
+    const [showAdminBtn, setShowAdminBtn] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setTimeout(() => setShow(true), 200);
     }, []);
 
+    // Optional: hidden key sequence to show admin button
+    useEffect(() => {
+        let keySequence = [];
+        const secretCode = ["a", "d", "m", "i", "n"]; // type 'admin' to show button
+
+        const handleKeyDown = (e) => {
+            keySequence.push(e.key.toLowerCase());
+            if (keySequence.length > secretCode.length) keySequence.shift();
+
+            if (keySequence.join("") === secretCode.join("")) {
+                setShowAdminBtn(true);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     return (
-        <div className="bg-black text-white">
+        <div className="bg-black text-white min-h-screen relative">
             {/* HERO */}
             <section
                 className="h-screen flex items-center justify-center text-center px-6 bg-cover bg-center relative"
@@ -50,6 +70,16 @@ export default function Home() {
             </section>
 
             <WhyChooseNganya />
+
+            {/* Hidden Admin Button */}
+            {showAdminBtn && (
+                <button
+                    onClick={() => navigate("/admin-login")}
+                    className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded-xl shadow-lg z-50"
+                >
+                    Admin
+                </button>
+            )}
         </div>
     );
 }
