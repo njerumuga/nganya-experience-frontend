@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// ✅ Backend base URL (Render)
 const API_BASE = "https://nganya-experience-backend-2.onrender.com";
 
 export default function AdminDashboard() {
@@ -17,62 +16,44 @@ export default function AdminDashboard() {
         { name: "", price: "", capacity: "" }
     ]);
 
-    // 🔄 Fetch events
     const fetchEvents = () => {
         fetch(`${API_BASE}/api/events`)
             .then(res => res.json())
-            .then(setEvents)
-            .catch(err => console.error("Fetch events error:", err));
+            .then(setEvents);
     };
 
     useEffect(() => {
         fetchEvents();
     }, []);
 
-    // 📤 Upload poster
     const uploadPoster = async () => {
         if (!posterFile) return null;
 
         const formData = new FormData();
         formData.append("file", posterFile);
 
-        const res = await fetch(
-            `${API_BASE}/api/events/upload-poster`,
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
+        const res = await fetch(`${API_BASE}/api/events/upload-poster`, {
+            method: "POST",
+            body: formData,
+        });
 
         return await res.text();
     };
 
-    // 🎟️ Ticket helpers
     const updateTicket = (index, field, value) => {
         const updated = [...tickets];
         updated[index][field] = value;
         setTickets(updated);
     };
 
-    const addTicket = () => {
-        setTickets([...tickets, { name: "", price: "", capacity: "" }]);
-    };
+    const addTicket = () => setTickets([...tickets, { name: "", price: "", capacity: "" }]);
+    const removeTicket = (index) => setTickets(tickets.filter((_, i) => i !== index));
 
-    const removeTicket = (index) => {
-        setTickets(tickets.filter((_, i) => i !== index));
-    };
-
-    // ➕ Create event
     const createEvent = async () => {
-        if (!title || !date || !location) {
-            alert("Fill required fields");
-            return;
-        }
+        if (!title || !date || !location) return alert("Fill required fields");
 
         let posterUrl = null;
-        if (posterFile) {
-            posterUrl = await uploadPoster();
-        }
+        if (posterFile) posterUrl = await uploadPoster();
 
         await fetch(`${API_BASE}/api/events`, {
             method: "POST",
@@ -93,7 +74,6 @@ export default function AdminDashboard() {
             }),
         });
 
-        // Reset form
         setTitle("");
         setDate("");
         setTime("");
@@ -105,15 +85,9 @@ export default function AdminDashboard() {
         fetchEvents();
     };
 
-    // 🧨 Delete event
     const deleteEvent = async (id) => {
-        const confirmDelete = window.confirm("Delete this event?");
-        if (!confirmDelete) return;
-
-        await fetch(`${API_BASE}/api/admin/events/${id}`, {
-            method: "DELETE",
-        });
-
+        if (!window.confirm("Delete this event?")) return;
+        await fetch(`${API_BASE}/api/admin/events/${id}`, { method: "DELETE" });
         fetchEvents();
     };
 
@@ -121,119 +95,45 @@ export default function AdminDashboard() {
         <div className="p-8 max-w-6xl mx-auto space-y-10">
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
-            {/* CREATE EVENT */}
             <div className="border rounded-xl p-6 shadow space-y-6">
                 <h2 className="text-xl font-semibold">Create Event</h2>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                    <input
-                        placeholder="Title"
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={e => setDate(e.target.value)}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        type="time"
-                        value={time}
-                        onChange={e => setTime(e.target.value)}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        placeholder="Location"
-                        value={location}
-                        onChange={e => setLocation(e.target.value)}
-                        className="border p-3 rounded"
-                    />
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={e => setPosterFile(e.target.files[0])}
-                        className="border p-3 rounded md:col-span-2"
-                    />
-                    <textarea
-                        placeholder="Description"
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        className="border p-3 rounded md:col-span-2"
-                    />
+                    <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="border p-3 rounded" />
+                    <input type="date" value={date} onChange={e => setDate(e.target.value)} className="border p-3 rounded" />
+                    <input type="time" value={time} onChange={e => setTime(e.target.value)} className="border p-3 rounded" />
+                    <input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} className="border p-3 rounded" />
+                    <input type="file" accept="image/*" onChange={e => setPosterFile(e.target.files[0])} className="border p-3 rounded md:col-span-2" />
+                    <textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} className="border p-3 rounded md:col-span-2" />
                 </div>
 
-                {/* TICKETS */}
                 <div className="space-y-4">
                     <h3 className="font-semibold">Ticket Types</h3>
 
                     {tickets.map((t, i) => (
                         <div key={i} className="grid grid-cols-4 gap-3">
-                            <input
-                                placeholder="Name"
-                                value={t.name}
-                                onChange={e => updateTicket(i, "name", e.target.value)}
-                                className="border p-2 rounded"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Price"
-                                value={t.price}
-                                onChange={e => updateTicket(i, "price", e.target.value)}
-                                className="border p-2 rounded"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Capacity"
-                                value={t.capacity}
-                                onChange={e => updateTicket(i, "capacity", e.target.value)}
-                                className="border p-2 rounded"
-                            />
-                            <button
-                                onClick={() => removeTicket(i)}
-                                className="text-red-600"
-                            >
-                                Remove
-                            </button>
+                            <input placeholder="Name" value={t.name} onChange={e => updateTicket(i, "name", e.target.value)} className="border p-2 rounded" />
+                            <input type="number" placeholder="Price" value={t.price} onChange={e => updateTicket(i, "price", e.target.value)} className="border p-2 rounded" />
+                            <input type="number" placeholder="Capacity" value={t.capacity} onChange={e => updateTicket(i, "capacity", e.target.value)} className="border p-2 rounded" />
+                            <button onClick={() => removeTicket(i)} className="text-red-600">Remove</button>
                         </div>
                     ))}
 
-                    <button onClick={addTicket} className="text-blue-600">
-                        + Add Ticket
-                    </button>
+                    <button onClick={addTicket} className="text-blue-600">+ Add Ticket</button>
                 </div>
 
-                <button
-                    onClick={createEvent}
-                    className="bg-black text-white px-6 py-3 rounded-xl"
-                >
-                    Add Event
-                </button>
+                <button onClick={createEvent} className="bg-black text-white px-6 py-3 rounded-xl">Add Event</button>
             </div>
 
-            {/* EVENTS LIST */}
             <div className="space-y-4">
                 <h2 className="text-2xl font-bold">Posted Events</h2>
-
                 {events.map(event => (
-                    <div
-                        key={event.id}
-                        className="flex justify-between items-center border p-4 rounded-lg"
-                    >
+                    <div key={event.id} className="flex justify-between items-center border p-4 rounded-lg">
                         <div>
                             <p className="font-semibold">{event.title}</p>
-                            <p className="text-sm text-gray-500">
-                                {event.location} · {event.date}
-                            </p>
+                            <p className="text-sm text-gray-500">{event.location} · {event.date}</p>
                         </div>
-
-                        <button
-                            onClick={() => deleteEvent(event.id)}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg"
-                        >
-                            Delete
-                        </button>
+                        <button onClick={() => deleteEvent(event.id)} className="bg-red-600 text-white px-4 py-2 rounded-lg">Delete</button>
                     </div>
                 ))}
             </div>

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-// ✅ Render backend
 const API_BASE = "https://nganya-experience-backend-2.onrender.com";
+const ADMIN_PHONE = "254719522977"; // no +
 
 export default function EventDetails() {
-    const ADMIN_PHONE = "+254719522977";
     const { id } = useParams();
 
     const [event, setEvent] = useState(null);
@@ -18,8 +17,7 @@ export default function EventDetails() {
     useEffect(() => {
         fetch(`${API_BASE}/api/events/${id}`)
             .then(res => res.json())
-            .then(setEvent)
-            .catch(err => console.error("Failed to load event", err));
+            .then(setEvent);
     }, [id]);
 
     if (!event) {
@@ -40,11 +38,11 @@ export default function EventDetails() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    customerName: customerName.trim(),
-                    phoneNumber: phoneNumber.trim(),
+                    customerName,
+                    phoneNumber,
                     eventId: event.id,
-                    ticketTypeId: selectedTicket.id,
-                }),
+                    ticketTypeId: selectedTicket.id
+                })
             });
 
             const data = await response.json();
@@ -65,16 +63,12 @@ Hello Nganya Experience 👋
 🆔 Ticket Code: ${data.ticketCode}
             `;
 
-            const whatsappUrl = `https://wa.me/${ADMIN_PHONE.replace(
-                "+",
-                ""
-            )}?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(message)}`;
 
             window.open(whatsappUrl, "_blank");
 
             setSuccess(data);
 
-            // refresh event seats
             fetch(`${API_BASE}/api/events/${id}`)
                 .then(res => res.json())
                 .then(setEvent);
@@ -84,7 +78,6 @@ Hello Nganya Experience 👋
             setSelectedTicket(null);
         } catch (e) {
             console.error("Booking failed", e);
-            alert("Booking failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -123,56 +116,42 @@ Hello Nganya Experience 👋
                     </h2>
 
                     <div className="space-y-4">
-                        {event.tickets &&
-                            event.tickets.map(ticket => {
-                                const soldOut = ticket.seatsLeft <= 0;
+                        {event.tickets && event.tickets.map(ticket => {
+                            const soldOut = ticket.seatsLeft <= 0;
 
-                                return (
-                                    <label
-                                        key={ticket.id}
-                                        className={`flex justify-between items-center border p-4 rounded-xl transition
-                                        border-[#2A2A2A]
-                                        ${soldOut
-                                            ? "opacity-50 cursor-not-allowed"
-                                            : "cursor-pointer hover:border-red-500"}
-                                        ${selectedTicket?.id === ticket.id
-                                            ? "border-red-500 bg-[#202020]"
-                                            : ""}`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                type="radio"
-                                                name="ticket"
-                                                disabled={soldOut}
-                                                checked={
-                                                    selectedTicket?.id ===
-                                                    ticket.id
-                                                }
-                                                onChange={() =>
-                                                    setSelectedTicket(ticket)
-                                                }
-                                            />
-                                            <span className="font-medium text-gray-200">
-                                                {ticket.name}
-                                                {soldOut && (
-                                                    <span className="ml-2 text-red-500 font-semibold">
-                                                        SOLD OUT
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
+                            return (
+                                <label
+                                    key={ticket.id}
+                                    className={`flex justify-between items-center border p-4 rounded-xl transition
+                                    border-[#2A2A2A]
+                                    ${soldOut ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-red-500"}
+                                    ${selectedTicket?.id === ticket.id ? "border-red-500 bg-[#202020]" : ""}`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="radio"
+                                            name="ticket"
+                                            disabled={soldOut}
+                                            checked={selectedTicket?.id === ticket.id}
+                                            onChange={() => setSelectedTicket(ticket)}
+                                        />
+                                        <span className="font-medium text-gray-200">
+                                            {ticket.name}
+                                            {soldOut && <span className="ml-2 text-red-500 font-semibold">SOLD OUT</span>}
+                                        </span>
+                                    </div>
 
-                                        <div className="text-right">
-                                            <p className="font-bold text-gray-100">
-                                                KES {ticket.price}
-                                            </p>
-                                            <p className="text-sm text-gray-400">
-                                                {ticket.seatsLeft} seats left
-                                            </p>
-                                        </div>
-                                    </label>
-                                );
-                            })}
+                                    <div className="text-right">
+                                        <p className="font-bold text-gray-100">
+                                            KES {ticket.price}
+                                        </p>
+                                        <p className="text-sm text-gray-400">
+                                            {ticket.seatsLeft} seats left
+                                        </p>
+                                    </div>
+                                </label>
+                            );
+                        })}
                     </div>
 
                     {selectedTicket && selectedTicket.seatsLeft > 0 && (
@@ -181,9 +160,7 @@ Hello Nganya Experience 👋
                                 type="text"
                                 placeholder="Your Name"
                                 value={customerName}
-                                onChange={e =>
-                                    setCustomerName(e.target.value)
-                                }
+                                onChange={(e) => setCustomerName(e.target.value)}
                                 className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl text-gray-200 placeholder-gray-500"
                             />
 
@@ -191,22 +168,16 @@ Hello Nganya Experience 👋
                                 type="tel"
                                 placeholder="Phone Number"
                                 value={phoneNumber}
-                                onChange={e =>
-                                    setPhoneNumber(e.target.value)
-                                }
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl text-gray-200 placeholder-gray-500"
                             />
 
                             <button
                                 onClick={handleBooking}
-                                disabled={
-                                    !customerName || !phoneNumber || loading
-                                }
+                                disabled={!customerName || !phoneNumber || loading}
                                 className="w-full bg-red-600 hover:bg-red-700 transition text-white py-3 rounded-xl font-semibold disabled:opacity-50"
                             >
-                                {loading
-                                    ? "Processing..."
-                                    : "Book via WhatsApp"}
+                                {loading ? "Processing..." : "Book via WhatsApp"}
                             </button>
                         </div>
                     )}

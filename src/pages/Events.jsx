@@ -2,22 +2,20 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getEvents } from "../api/eventApi";
 
-// ✅ Render backend (for images)
 const API_BASE = "https://nganya-experience-backend-2.onrender.com";
 
 export default function Events() {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        getEvents()
-            .then(setEvents)
-            .catch(err => console.error("Failed to load events", err));
+        getEvents().then(setEvents);
     }, []);
 
     return (
         <div className="bg-[#121212] text-gray-200 min-h-screen pt-24">
             <div className="max-w-7xl mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+
                     {events.map(event => (
                         <Link
                             key={event.id}
@@ -39,14 +37,12 @@ export default function Events() {
                                                 : "/placeholder.jpg"
                                         }
                                         onError={e =>
-                                            (e.currentTarget.src =
-                                                "/placeholder.jpg")
+                                            (e.currentTarget.src = "/placeholder.jpg")
                                         }
                                         alt={event.title}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
 
-                                    {/* gradient overlay */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                                 </div>
 
@@ -64,23 +60,23 @@ export default function Events() {
                                     </p>
 
                                     <div className="pt-3 space-y-1">
-                                        {event.tickets &&
-                                            event.tickets.map(ticket => (
-                                                <p
-                                                    key={ticket.id}
-                                                    className="text-sm flex justify-between text-gray-300"
-                                                >
-                                                    <span>{ticket.name}</span>
-                                                    <span className="text-yellow-400 font-semibold">
-                                                        KES {ticket.price}
-                                                    </span>
-                                                </p>
-                                            ))}
+                                        {event.tickets && event.tickets.map(ticket => (
+                                            <p
+                                                key={ticket.id}
+                                                className="text-sm flex justify-between text-gray-300"
+                                            >
+                                                <span>{ticket.name}</span>
+                                                <span className="text-yellow-400 font-semibold">
+                                                    KES {ticket.price}
+                                                </span>
+                                            </p>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
                         </Link>
                     ))}
+
                 </div>
             </div>
         </div>

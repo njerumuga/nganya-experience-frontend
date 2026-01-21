@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Render backend
 const API_BASE = "https://nganya-experience-backend-2.onrender.com";
 
 export default function AdminLogin() {
@@ -12,7 +11,6 @@ export default function AdminLogin() {
 
     const login = async () => {
         setError("");
-
         if (!password.trim()) {
             setError("Password cannot be empty");
             return;
@@ -36,8 +34,8 @@ export default function AdminLogin() {
                 setError("Wrong password");
             }
         } catch (err) {
-            console.error("Admin login error:", err);
-            setError("Server error. Try again later.");
+            console.error(err);
+            setError("Something went wrong. Try again.");
         } finally {
             setLoading(false);
         }
@@ -52,9 +50,7 @@ export default function AdminLogin() {
             <div className="border p-8 rounded-xl w-96 space-y-4 shadow bg-white">
                 <h1 className="text-2xl font-bold text-center">Admin Login</h1>
 
-                {error && (
-                    <p className="text-red-600 text-center">{error}</p>
-                )}
+                {error && <p className="text-red-600 text-center">{error}</p>}
 
                 <input
                     type="password"
@@ -69,11 +65,7 @@ export default function AdminLogin() {
                 <button
                     onClick={login}
                     disabled={loading}
-                    className={`w-full py-3 rounded-xl text-white ${
-                        loading
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-black"
-                    }`}
+                    className={`w-full py-3 rounded-xl text-white ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-black"}`}
                 >
                     {loading ? "Logging in..." : "Login"}
                 </button>
