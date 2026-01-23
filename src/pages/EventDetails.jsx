@@ -63,9 +63,10 @@ Hello Nganya Experience 👋
 🆔 Ticket Code: ${data.ticketCode}
             `;
 
-            const whatsappUrl = `https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(message)}`;
-
-            window.open(whatsappUrl, "_blank");
+            window.open(
+                `https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(message)}`,
+                "_blank"
+            );
 
             setSuccess(data);
 
@@ -87,11 +88,7 @@ Hello Nganya Experience 👋
         <div className="min-h-screen bg-[#121212] text-gray-200 px-4 py-10">
             <div className="max-w-4xl mx-auto bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
                 <img
-                    src={
-                        event.posterUrl
-                            ? `${API_BASE}${event.posterUrl}`
-                            : "/placeholder.jpg"
-                    }
+                    src={event.posterUrl || "/placeholder.jpg"}
                     onError={(e) => (e.target.src = "/placeholder.jpg")}
                     alt={event.title}
                     className="w-full h-80 object-cover"
@@ -130,14 +127,17 @@ Hello Nganya Experience 👋
                                     <div className="flex items-center gap-3">
                                         <input
                                             type="radio"
-                                            name="ticket"
                                             disabled={soldOut}
                                             checked={selectedTicket?.id === ticket.id}
                                             onChange={() => setSelectedTicket(ticket)}
                                         />
                                         <span className="font-medium text-gray-200">
                                             {ticket.name}
-                                            {soldOut && <span className="ml-2 text-red-500 font-semibold">SOLD OUT</span>}
+                                            {soldOut && (
+                                                <span className="ml-2 text-red-500 font-semibold">
+                                                    SOLD OUT
+                                                </span>
+                                            )}
                                         </span>
                                     </div>
 
@@ -157,25 +157,23 @@ Hello Nganya Experience 👋
                     {selectedTicket && selectedTicket.seatsLeft > 0 && (
                         <div className="mt-8 space-y-4">
                             <input
-                                type="text"
                                 placeholder="Your Name"
                                 value={customerName}
                                 onChange={(e) => setCustomerName(e.target.value)}
-                                className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl text-gray-200 placeholder-gray-500"
+                                className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl"
                             />
 
                             <input
-                                type="tel"
                                 placeholder="Phone Number"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl text-gray-200 placeholder-gray-500"
+                                className="w-full bg-[#202020] border border-[#2A2A2A] p-3 rounded-xl"
                             />
 
                             <button
                                 onClick={handleBooking}
                                 disabled={!customerName || !phoneNumber || loading}
-                                className="w-full bg-red-600 hover:bg-red-700 transition text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+                                className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold"
                             >
                                 {loading ? "Processing..." : "Book via WhatsApp"}
                             </button>

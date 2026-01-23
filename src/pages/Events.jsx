@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getEvents } from "../api/eventApi";
 
-const API_BASE = "https://nganya-experience-backend-2.onrender.com";
-
 export default function Events() {
     const [events, setEvents] = useState([]);
 
@@ -31,11 +29,7 @@ export default function Events() {
                             >
                                 <div className="relative h-48 md:h-56 overflow-hidden">
                                     <img
-                                        src={
-                                            event.posterUrl
-                                                ? `${API_BASE}${event.posterUrl}`
-                                                : "/placeholder.jpg"
-                                        }
+                                        src={event.posterUrl || "/placeholder.jpg"}
                                         onError={e =>
                                             (e.currentTarget.src = "/placeholder.jpg")
                                         }
