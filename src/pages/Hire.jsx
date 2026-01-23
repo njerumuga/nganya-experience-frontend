@@ -10,6 +10,7 @@ export default function Hire() {
     const [phone, setPhone] = useState("");
     const [date, setDate] = useState("");
 
+    // Fetch all nganyas
     useEffect(() => {
         fetch(`${API_BASE}/api/nganyas`)
             .then(res => res.json())
@@ -36,9 +37,7 @@ Hello Nganya Experience 👋
 📞 Phone: ${phone}
         `;
 
-        const whatsappUrl =
-            `https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(message)}`;
-
+        const whatsappUrl = `https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, "_blank");
 
         setSelected(null);
@@ -47,7 +46,8 @@ Hello Nganya Experience 👋
         setDate("");
     };
 
-    const resolveImage = (url) => url ? `${API_BASE}${url}` : "/placeholder.jpg";
+    // Resolve Cloudinary full URLs
+    const resolveImage = (url) => url || "/placeholder.jpg";
 
     return (
         <div className="bg-black text-white min-h-screen pt-24">
@@ -65,9 +65,7 @@ Hello Nganya Experience 👋
                                 transition-all duration-500
                                 hover:-translate-y-2 hover:scale-[1.02]
                                 hover:shadow-[0_0_40px_rgba(168,85,247,0.35)]
-                                ${selected?.id === n.id
-                                ? "ring-2 ring-purple-500 shadow-[0_0_45px_rgba(168,85,247,0.6)]"
-                                : ""}
+                                ${selected?.id === n.id ? "ring-2 ring-purple-500 shadow-[0_0_45px_rgba(168,85,247,0.6)]" : ""}
                             `}
                         >
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-gradient-to-br from-purple-500/20 via-transparent to-red-500/20" />

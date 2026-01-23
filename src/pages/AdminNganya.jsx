@@ -11,7 +11,8 @@ export default function AdminNganya() {
     const fetchNganyas = () => {
         fetch(`${API_BASE}/api/nganyas`)
             .then(res => res.json())
-            .then(setNganyas);
+            .then(setNganyas)
+            .catch(console.error);
     };
 
     useEffect(() => fetchNganyas(), []);
@@ -39,7 +40,8 @@ export default function AdminNganya() {
         fetchNganyas();
     };
 
-    const resolveImage = (url) => url ? `${API_BASE}${url}` : "/placeholder.jpg";
+    // ✅ FIXED: Cloudinary full URL is already absolute
+    const resolveImage = (url) => url || "/placeholder.jpg";
 
     return (
         <div className="max-w-6xl mx-auto p-8 space-y-10">
